@@ -41,6 +41,9 @@ matrix:
     - os:         osx
       osx_image:  xcode8.2
       env:        TARGET=custom-qt4-osx
+      before_install:
+        - brew update
+        - brew install --force openssl
 
     - os:         linux
       env:        TARGET=custom-qt4-windows
@@ -61,9 +64,8 @@ script:
     elif [[ $TARGET == "custom-qt4-linux"   ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py posix-local -debug;
     elif [[ $TARGET == "custom-qt4-windows" ]]; then CFLAGS=-w CXXFLAGS=-w scripts/build.py mingw-w64-cross-win32 -debug;
     elif [[ $TARGET == "custom-qt4-osx"     ]]; then
-        WKHTMLTOX_QT_CONFIG="remove:-openssl -no-openssl" \
-        CFLAGS="-w -mmacosx-version-min=10.6" \
-        CXXFLAGS="-w -mmacosx-version-min=10.6" \
-        OBJCFLAGS="-w -mmacosx-version-min=10.6" \
+        CFLAGS="-w -I/usr/local/opt/openssl/include" \
+        CXXFLAGS="-w -I/usr/local/opt/openssl/include" \
+        LDFLAGS="-L/usr/local/opt/openssl/lib" \
         scripts/build.py osx-cocoa-x86-64 -debug;
     fi
